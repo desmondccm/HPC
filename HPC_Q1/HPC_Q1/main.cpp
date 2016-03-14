@@ -38,15 +38,29 @@ int main() {
     
     
     /*--------------------------- Defining the x-co-ordinate space by creating an x-vector -----------------------------------------*/
+    
     for (int i=0; i<Nx+1; i++) { //fill vector based on the size of size of the vector
         x[i]=0+i*dx; //increments the x vector according to dx size
         //cout<<x[i]<<endl; //check that the x-vector makes sense
     }
+    
     /*--------------------------- Defining the u0 vector as the initial heat distribution along the bar ----------------------------*/
+    
     for (int i=0; i<Nx+1; i++) { //fill vector based on the size of size of the vector
         u0[i]=x[i]/(1-x[i]); //increments the x vector according to dx size
-        cout<<u0[i]<<endl; //check that the x-vector makes sense
+        //cout<<u0[i]<<endl; //check that the x-vector makes sense
     }
+    
+    /*--------------------------- constructing the starting initial u vector for the heat distribution -----------------------------*/
+    u1[1]=gamma0;
+    u1[(Nx+1)]=gamma1;
+    
+    for (int i=1; i<Nx+1; i++) { //fill vector based on the size of size of the vector
+        u1[i]=u0[i]; //increments the x vector according to dx size
+        //cout<<u1[i-1]<<endl; //check that the x-vector makes sense
+    }
+    //cout<<u1[Nx+1]<<endl;
+    
     
     return 0;
 }
