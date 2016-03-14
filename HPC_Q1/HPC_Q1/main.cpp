@@ -14,10 +14,9 @@ using namespace std;
 class TriM //declare a Tri-Matrix class used for the multiplication
 {
     public:
-    typedef vector<int> Row; //declare a single row
-    typedef vector<Row> Matrix; //Define a matrix as a colum of rows
-    Matrix M;
 };
+
+
 
 int main() {
     /*----------------------------- programme description: -------------------------------------------------------------------------------------*/
@@ -43,6 +42,9 @@ int main() {
     vector<double> u0((Nx+1));//initial heat distribution
     vector<double> u1((Nx+1));//vector defined for matrix multiplication
     vector<double> u2((Nx+1));//vector defined for receipient of matrix multiplcation
+    typedef vector<int> Row; //declare a single row
+    typedef vector<Row> Matrix; //Define a matrix as a colum of rows
+    Matrix M((Nx+1),Row(Nx+1));
     
     
     /*--------------------------- Defining the x-co-ordinate space by creating an x-vector ------------------------------------------------------*/
@@ -59,7 +61,7 @@ int main() {
         //cout<<u0[i]<<endl; //check that the x-vector makes sense
     }
     
-    /*--------------------------- constructing the starting initial u vector for the heat distribution ----------------------------------------*/
+    /*--------------------------- constructing the starting initial u vector for the heat distribution ------------------------------------------*/
     u1[1]=gamma0;
     u1[(Nx+1)]=gamma1;
     
@@ -68,6 +70,10 @@ int main() {
         //cout<<u1[i-1]<<endl; //check that the x-vector makes sense
     }
     //cout<<u1[Nx+1]<<endl;
+    
+    /*--------------------------- Construct the Tri-diagonal Matrix M ---------------------------------------------------------------------------*/
+    //middle diagonal
+    
     
     return 0;
 }
