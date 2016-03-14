@@ -11,7 +11,7 @@
 #include <vector>
 using namespace std;
 
-class TriM //declare a Tri-Matrix class used for the multiplication
+class TriM                          //declare a Tri-Matrix class used for the multiplication
 {
     public:
 };
@@ -23,57 +23,63 @@ int main() {
     cout << "this codes HPC code 1 in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
     cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
     
-    /*----------------------------- end of programme description: ------------------------------------------------------------------------------*/
+    /*----------------------------- Declare variables used for the problem ---------------------------------------------------------------------*/
     
-    //Declare variables used for the problem
-    double alpha = 1; //heat conductivity
-    double dt = 0.001; //time step size
-    int Nx = 20; //space steps
-    double L = 1; //bar length
-    double gamma0 = 0; //temperature at front end of bar (BC1)
-    double gamma1 = 0; //temeprature at rear end of bar (BC2)
-    double T = 10; //run time
-    double dx = L/Nx; //defines space step size
-    double nu = alpha*dt/dx/dx; //defines the nu constant
+    double alpha = 1;               //heat conductivity
+    double dt = 0.001;              //time step size
+    int Nx = 20;                    //space steps
+    double L = 1;                   //bar length
+    double gamma0 = 0;              //temperature at front end of bar (BC1)
+    double gamma1 = 0;              //temeprature at rear end of bar (BC2)
+    double T = 10;                  //run time
+    double dx = L/Nx;               //defines space step size
+    double nu = alpha*dt/dx/dx;     //defines the nu constant
     
-    /*--------------------------- Defining all vectors and matrices used in the programme -------------------------------------------------------*/
+    /*----------------------------- Defining all vectors and matrices used in the programme -----------------------------------------------------*/
     
-    vector<double> x((Nx+1));//x-co-ordinates
-    vector<double> u0((Nx+1));//initial heat distribution
-    vector<double> u1((Nx+1));//vector defined for matrix multiplication
-    vector<double> u2((Nx+1));//vector defined for receipient of matrix multiplcation
-    typedef vector<int> Row; //declare a single row
-    typedef vector<Row> Matrix; //Define a matrix as a colum of rows
+    vector<double> x((Nx+1));       //x-co-ordinates
+    vector<double> u0((Nx+1));      //initial heat distribution
+    vector<double> u1((Nx+1));      //vector defined for matrix multiplication
+    vector<double> u2((Nx+1));      //vector defined for receipient of matrix multiplcation
+    typedef vector<int> Row;        //declare a single row
+    typedef vector<Row> Matrix;     //Define a matrix as a colum of rows
     Matrix M((Nx+1),Row(Nx+1));
     
+
+    /*----------------------------- Defining the x-co-ordinate space by creating an x-vector -----------------------------------------------------*/
     
-    /*--------------------------- Defining the x-co-ordinate space by creating an x-vector ------------------------------------------------------*/
-    
-    for (int i=0; i<Nx+1; i++) { //fill vector based on the size of size of the vector
-        x[i]=0+i*dx; //increments the x vector according to dx size
+    for (int i=0; i<Nx+1; i++) {    //fill vector based on the size of size of the vector
+        x[i]=0+i*dx;    //increments the x vector according to dx size
         //cout<<x[i]<<endl; //check that the x-vector makes sense
     }
     
-    /*--------------------------- Defining the u0 vector as the initial heat distribution along the bar ----------------------------------------*/
+    /*----------------------------- Defining the u0 vector as the initial heat distribution along the bar ----------------------------------------*/
     
-    for (int i=0; i<Nx+1; i++) { //fill vector based on the size of size of the vector
-        u0[i]=x[i]/(1-x[i]); //increments the x vector according to dx size
+    for (int i=0; i<Nx+1; i++) {    //fill vector based on the size of size of the vector
+        u0[i]=x[i]/(1-x[i]);    //increments the x vector according to dx size
         //cout<<u0[i]<<endl; //check that the x-vector makes sense
     }
     
-    /*--------------------------- constructing the starting initial u vector for the heat distribution ------------------------------------------*/
+    /*----------------------------- constructing the starting initial u vector for the heat distribution ------------------------------------------*/
     u1[1]=gamma0;
     u1[(Nx+1)]=gamma1;
     
-    for (int i=1; i<Nx+1; i++) { //fill vector based on the size of size of the vector
-        u1[i]=u0[i]; //increments the x vector according to dx size
-        //cout<<u1[i-1]<<endl; //check that the x-vector makes sense
+    for (int i=1; i<Nx+1; i++) {    //fill vector based on the size of size of the vector
+        u1[i]=u0[i];                //increments the x vector according to dx size
+                                    //cout<<u1[i-1]<<endl; //check that the x-vector makes sense
     }
-    //cout<<u1[Nx+1]<<endl;
+                                    //cout<<u1[Nx+1]<<endl;
     
-    /*--------------------------- Construct the Tri-diagonal Matrix M ---------------------------------------------------------------------------*/
-    //middle diagonal
-    
+    /*----------------------------- Construct the Tri-diagonal Matrix M ---------------------------------------------------------------------------*/
+    for (int i=0; i<Nx+1; i++) {
+        M[i][i]=1-2*nu;             //filling middle diagonal
+        M[i][i+1]=nu;               //filling upper diagonal
+        M[i][i-1]=nu;               //filling loer diagonal
+    }
+    M[0][0]=1;                      //middle diagonal always starts 1
+    M[Nx][Nx]=1;                    //middle diagonal always ends with 1
+    M[Nx][Nx-1]=0;                  //lower diagonal always ends with 0
+    M[1][2]=0;                      //upper diagonal always starts with 0
     
     return 0;
 }
