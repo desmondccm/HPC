@@ -8,48 +8,44 @@
 
 #include <iostream>
 #include <vector>
+
 using namespace std;
 typedef vector<double> Row;         //declare a single row
 typedef vector<Row> Matrix;         //Define a matrix as a colum of rows
 
-class TriMatrix                     //declare a Tri-Matrix class, a special type of matrix that consist of a non-zero diagonal, upper diagonal and lower diagonal.
-{
+using namespace std;
+typedef vector<double> Row;         //declare a single row
+typedef vector<Row> Matrix;         //Define a matrix as a colum of rows
+
+
+class Vector: public std::vector<double> {
 public:
-    int dim;
-    double diag, updiag, lowdiag;   //used for matrix generation and matrix properties
-    vector<double> vectorin;        //used for matrix multiplication.
-
-    Matrix Matrixgen(void)          //define a function that generates a matrix
-    {
-        Matrix M(dim, Row(dim));
-        for (int i=0; i<dim; i++) {
-            M[i][i]=diag;           //filling middle diagonal
-            M[i][i+1]=updiag;       //filling upper diagonal
-            M[i][i-1]=lowdiag;      //filling lower diagonal
-        }
-        M[0][0]=1;                  //middle diagonal always starts 1
-        M[dim][dim]=1;              //middle diagonal always ends with 1
-        M[dim][dim-1]=0;            //lower diagonal always ends with 0
-        M[1][2]=0;                  //upper diagonal always starts with 0
-        return M;
+    Vector(int size): std::vector<double>(size) {}
+    void fill(double val) {
+        for(int i=0; i<this->size(); i++)
+            this[i] = val;
     }
-    
-    vector<double> Matrixmult(void)         //defines a function that multiplies matrices to vectors
-    {
-        Matrix A = Matrixgen();     //Calls the matrix generation function to generate a Matrix
-        vector<double> vectorout(dim); //initialize an output vector
-        double sum = 0;             //initilizes a sum variable representing each row
-        for (int i=0; i<dim; i++) { //defines a forloop that writes member to vector
-            for (int j=0; j<dim; j++) {
-                double dum=A[i][j]*vectorin[j];
-                sum=dum+sum;
-            }
-            vectorout[i]=sum;
-        }
-    return vectorout;
-    }
-
 };
+
+
+class TriMatrix {
+    Vector *diag, *suDiag, *sbDiag;
+public:
+    TriMatrix(int Nx, double nu) {
+        int Nx2 = Nx * Nx;
+        diag = new Vector(Nx);
+        suDiag = new Vector(Nx2-1);
+        sbDiag = new Vector(Nx2-1);
+        diag->fill(1-2*nu);
+    }
+    vector<double> Matrixmult(vector<double> U){
+        vector<double> u2;
+        
+        
+        return u2;
+    }
+};
+
 
 int main() {
     /*----------------------------- programme description: -------------------------------------------------------------------------------------*/
@@ -60,7 +56,7 @@ int main() {
     
     double alpha = 1;               //heat conductivity
     double dt = 0.001;              //time step size
-    int Nx = 20;                    //space steps
+    double Nx = 20;                 //space steps
     double L = 1;                   //bar length
     double gamma0 = 0;              //temperature at front end of bar (BC1)
     double gamma1 = 0;              //temeprature at rear end of bar (BC2)
@@ -102,8 +98,8 @@ int main() {
     
     /*------------------------ Construct the Tri-diagonal Matrix Mat by defining it as an object within class TriMatrix ---------------------------*/
     TriMatrix Mat;
-    Mat.dim = Nx-1;
-    Mat.diag = 1-2*nu;
+    Mat.dim = (Nx+1);
+    Mat.diag = (1-2*nu);
     Mat.updiag = nu;
     Mat.lowdiag = nu;
     Matrix Matt=Mat.Matrixgen();
@@ -114,7 +110,8 @@ int main() {
     for (double t=0; t<T; t+=dt) {
         u2=Mat.Matrixmult();
         Mat.vectorin = u2;
+        cout<<u2[1];
     }
-    
+
     return 0;
 }
