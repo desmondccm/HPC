@@ -14,28 +14,31 @@ using namespace std;
 
 
 class TriMatrix {
-    vector<double> *diag, *uDiag, *lDiag;                               //stores the 3 vectors for the diagonals
+    vector<double> *diag, *uDiag, *lDiag;                               //stores the 3 vectors for the diagonals as pointers to their memory location
+    
     
 public:                                                                 //Enables public access using the constructor function and other accessor functions
-
+    
     /*--------------------------------------------- Constructor for constructing the trimatrix by defining the diagonal vectors ----------------------------------*/
     
     TriMatrix(vector<double> *a, vector<double> *b, vector<double> *c):
     diag(b), uDiag(c), lDiag(a) {};
     
+    
+    
     /*--------------------------------------------- Matrix multiplication function accessable by public ----------------------------------------------------------*/
-        
-    vector<double> *Matrixmult(vector<double> *U){                      //initiates a matrix multiplication function unique to Tri-Matrix that requires 3xN operations
+    
+    vector<double> *Matrixmult(vector<double> *U){                      //initiates a matrix mult function unique to Tri-Matrix that requires 3xN operations
         int dim = diag->size();
         vector<double> *u2;
-        vector<double> dum1, dum2, dum3;
+        vector<double> dum1(dim), dum2(dim), dum3(dim);
         u2 = new vector<double>(dim);
         
         for (int i = 0; i < dim; i++) {                                 //for adding the middle diagonal's contribution to the output vector
             dum1[i] = (*U)[i] * (*diag)[i];
         }
         
-        for (int i = 1; i < (dim); i++) {                               //for adding the lower diagonal's contribution to the output vector
+        for (int i = 1; i < dim ; i++) {                               //for adding the lower diagonal's contribution to the output vector
             dum2[i] = (*U)[i-1] * (*lDiag)[i-1];
         }
         
@@ -46,11 +49,11 @@ public:                                                                 //Enable
         for (int i = 0; i < (dim - 1); i++) {
             (*u2)[i] = dum1[i] + dum2[i] + dum3[i];
         }
-        (*u2)[0] = dum1[0]+dum3[0];
-        (*u2)[dim-1] = dum1[dim-1]+dum2[dim-1];
+        (*u2)[0] = dum1[0] + dum3[0];
+        (*u2)[dim-1] = dum1[dim-1] + dum2[dim-1];
         
         return u2;
-        }
+    }
     
     /*--------------------------------------------- Matrix printing function accessable by public ---------------------------------------------------------------*/
     
@@ -59,20 +62,20 @@ public:                                                                 //Enable
         
         cout << "Upper diagonal: " << endl;                             //printing the upper diagonal
         for (int i=0; i < (*uDiag).size(); i++) {
-        cout << (*uDiag)[i] << "  ";
+            cout << (*uDiag)[i] << "  ";
         }
-        
+        cout << endl;
         cout << "Main diagonal: " << endl;                              //printing main diagonal
         for (int i=0; i < (*diag).size(); i++) {
-            cout << (*diag)[i] << "  " << endl;
+            cout << (*diag)[i] << "  ";
         }
-        
+        cout << endl;
         cout << "Lower diagonal: " << endl;                             //printing main diagonal
         for (int i=0; i < (*lDiag).size(); i++) {
-            cout << (*lDiag)[i] << "  " << endl;
+            cout << (*lDiag)[i] << "  ";
         }
     }
     
-    };
+};
 
 #endif

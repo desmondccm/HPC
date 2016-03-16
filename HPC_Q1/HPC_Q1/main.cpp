@@ -1,5 +1,5 @@
 //
-//  main.cpp
+//  test.cpp
 //  HPC_Q1
 //
 //  Created by Desmond Cheung on 14/03/2016.
@@ -21,13 +21,13 @@ int main() {
     
     /*----------------------------- Declare variables used for the problem ----------------------------------------------------------------------------------------*/
     
-    double alpha = 1;                   //heat conductivity
+    double alpha = 0.1;                   //heat conductivity
     double dt = 0.001;                  //time step size
     double Nx = 20;                     //space steps
     double L = 1;                       //bar length
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
-    double T = 10;                      //run time
+    double T = 1;                      //run time
     double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
     
@@ -35,10 +35,11 @@ int main() {
     
     vector<double> x((Nx+1));           //x-co-ordinates
     vector<double> u0((Nx+1));          //initial heat distribution
-    vector<double> u1((Nx+1));          //vector defined for matrix multiplication
-    vector<double> u2((Nx+1));          //vector defined for receipient of matrix multiplcation
+    vector<double> * u1, * u2;          //vector defined for matrix multiplication
+    u1 = new vector<double>(Nx+1);
+    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix multiplcation
     
-
+    
     /*----------------------------- Defining the x-co-ordinate space by creating an x-vector ----------------------------------------------------------------------*/
     
     for (int i=0; i<Nx+1; i++) {        //fill vector based on the size of size of the vector
@@ -54,28 +55,24 @@ int main() {
     }
     
     /*----------------------------- Constructing the starting initial u vector for the heat distribution ----------------------------------------------------------*/
-   
-    u1[1]=gamma0;                       //first entry of u1 is 0
-    u1[(Nx+1)]=gamma1;                  //last entry of u1 is also 0
     
-    for (int i=1; i<Nx+1; i++) {        //fill vector based on the size of size of the vector
-        u1[i]=u0[i];                    //increments the x vector according to dx size
-        //cout<<u1[i-1]<<endl;          //check that the x-vector makes sense
-    }
-                                        //cout<<u1[Nx+1]<<endl;
+    (*u1)[0]=gamma0;
+    (*u1)[Nx]=gamma1;
+    
+    for (int i=1; i<Nx; i++) (*u1)[i] = u0[i]; //ommit the front and end term which was defined above using gamma0 and gamma1
     
     /*----------------------------- Declare and initialize the 3 vectors that define the TriMatrix according to project brief -------------------------------------*/
     
-    vector<double> *updiag;             //declares the upper diagonal's via a pointer
-    vector<double> *lowdiag;            //declares the upper diagonal's via a pointer
-    vector<double> *diag;               //declares the upper diagonal's via a pointer
+    vector<double> * updiag;             //declares the upper diagonal via a pointer
+    vector<double> * lowdiag;            //declares the main diagonal via a pointer
+    vector<double> * diag;               //declares the lower diagonal via a pointer
     
     diag = new vector<double>(Nx+1);    //constructs a new vector at address diag to store the matrix's diagonal
-    lowdiag = new vector<double>(Nx+1); //constructs a new vector at address lowdiag to store the matrix's lower diagonal
-    updiag = new vector<double>(Nx+1);  //constructs a new vector at address updiag to store the matrix's upper diagonal
+    lowdiag = new vector<double>(Nx); //constructs a new vector at address lowdiag to store the matrix's lower diagonal
+    updiag = new vector<double>(Nx);  //constructs a new vector at address updiag to store the matrix's upper diagonal
     
     /*----------------------------- Constructs the diagonal vector ------------------------------------------------------------------------------------------------*/
-
+    
     for (int i=1; i<Nx; i++) {
         (*diag)[i] = 1 - (2 * nu);      //writes 1-2nu into the middle diagonal except first and last entry
     }
@@ -88,17 +85,32 @@ int main() {
         (*updiag)[i] = nu;              //writes nu into the upper diagonal except first and last entry
     }
     (*updiag)[0] = 0;
+    (*updiag)[Nx-1] = nu;
     
     /*----------------------------- Constructs the upper diagonal vector ------------------------------------------------------------------------------------------*/
     
     for (int i=1; i<Nx-1; i++) {
-        (*updiag)[i] = nu;              //writes nu into the lower diagonal except first and last entry
+        (*lowdiag)[i] = nu;              //writes nu into the lower diagonal except first and last entry
     }
-    (*updiag)[Nx-1] = 0;
+    (*lowdiag)[Nx-1] = 0;
+    (*lowdiag)[0] = nu;
     
     /*----------------------------- Conduct the actual time-integration process as specified by the matrix multiplying method -------------------------------------*/
     
-    MMM = new TriMatrix(updiag, lowdiag, diag);
-
+    TriMatrix *triMatrix;
+    triMatrix = new TriMatrix(lowdiag, diag, updiag);
+    
+    triMatrix->display();
+    
+    for(double i=0; i<(T-dt); i+=dt) {
+        u2 = triMatrix->Matrixmult(u1);
+        u1 = u2;
+    }
+    
+    cout << endl;
+    cout << "This is the resulting heat vector after time: " << T << endl;
+    for (int i=0; i<(*u1).size(); i++){
+        cout << (*u1)[i] << endl;
+    }
     return 0;
 }
