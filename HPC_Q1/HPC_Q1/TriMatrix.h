@@ -38,7 +38,7 @@ public:                                                                 //Enable
             dum1[i] = (*U)[i] * (*diag)[i];
         }
         
-        for (int i = 1; i < dim ; i++) {                               //for adding the lower diagonal's contribution to the output vector
+        for (int i = 1; i < dim ; i++) {                                //for adding the lower diagonal's contribution to the output vector
             dum2[i] = (*U)[i-1] * (*lDiag)[i-1];
         }
         
@@ -75,6 +75,7 @@ public:                                                                 //Enable
             cout << (*lDiag)[i] << "  ";
         }
     }
+    
     
 };
 
