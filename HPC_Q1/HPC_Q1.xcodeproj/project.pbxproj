@@ -23,6 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		498C8ACA1C98CD3100373C17 /* TriMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriMatrix.h; sourceTree = "<group>"; };
 		49E8E5441C96F03100E415BF /* HPC_Q1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HPC_Q1; sourceTree = BUILT_PRODUCTS_DIR; };
 		49E8E5471C96F03100E415BF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				49E8E5471C96F03100E415BF /* main.cpp */,
+				498C8ACA1C98CD3100373C17 /* TriMatrix.h */,
 			);
 			path = HPC_Q1;
 			sourceTree = "<group>";
@@ -235,6 +237,7 @@
 				49E8E54D1C96F03100E415BF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
