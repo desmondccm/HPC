@@ -1,10 +1,10 @@
+//  main.cpp
+//  HPC_Q3ab
 //
-//  test.cpp
-//  HPC_Q1
-//
-//  Created by Desmond Cheung on 14/03/2016.
+//  Created by Desmond Cheung on 17/03/2016.
 //  Copyright (c) 2016 cmc213. All rights reserved.
 //
+
 
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@ int main() {
     cout << "this codes HPC code 1 in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
     cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
     
-    /*----------------------------- Declare variables used for the problem ----------------------------------------------------------------------------------------*/
+    /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
     
     cout << "alpha: ";
     double alpha;                       //heat conductivity
@@ -46,18 +46,26 @@ int main() {
     double T;
     cin >> T;                           //run time
     
+    cout << endl;
+    cout << "theta: ";
+    double theta;
+    cin >> theta;
+    
+    /*----------------------------- Other calculated variables ----------------------------------------------------------------------------------------------------*/
+    
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
     double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
+    double Nt = T/dt;
     
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
     vector<double> x((Nx+1));           //x-co-ordinates
     vector<double> u0((Nx+1));          //initial heat distribution
     vector<double> * u1, * u2;          //vectors declared for matrix multiplication
-    u1 = new vector<double>(Nx+1);      //vetors constructed for starting matrix multiplication
-    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix multiplcation
+    u1 = new vector<double>(Nx+1);      //vetors constructed for starting matrix inversion
+    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix inversion
     
     
     /*----------------------------- Defining the x-co-ordinate space by creating an x-vector ----------------------------------------------------------------------*/
@@ -79,50 +87,20 @@ int main() {
     (*u1)[0]=gamma0;
     (*u1)[Nx]=gamma1;
     
-    for (int i=1; i<Nx; i++) (*u1)[i] = u0[i]; //ommit the front and end term which was defined above using gamma0 and gamma1
-    
-    /*----------------------------- Declare and initialize the 3 vectors that define the TriMatrix according to project brief -------------------------------------*/
-    
-    vector<double> * updiag;             //declares the upper diagonal via a pointer
-    vector<double> * lowdiag;            //declares the main diagonal via a pointer
-    vector<double> * diag;               //declares the lower diagonal via a pointer
-    
-    diag = new vector<double>(Nx+1);    //constructs a new vector at address diag to store the matrix's diagonal
-    lowdiag = new vector<double>(Nx);   //constructs a new vector at address lowdiag to store the matrix's lower diagonal
-    updiag = new vector<double>(Nx);    //constructs a new vector at address updiag to store the matrix's upper diagonal
-    
-    /*----------------------------- Constructs the diagonal vector ------------------------------------------------------------------------------------------------*/
-    
     for (int i=1; i<Nx; i++) {
-        (*diag)[i] = 1 - (2 * nu);      //writes 1-2nu into the middle diagonal except first and last entry
+        (*u1)[i] = u0[i]; //ommit the front and end term which was defined above using gamma0 and gamma1
     }
-    (*diag)[0] = 1;                     //wrties last entry
-    (*diag)[Nx] = 1;
     
-    /*----------------------------- Constructs the upper diagonal vector ------------------------------------------------------------------------------------------*/
     
-    for (int i=1; i<Nx-1; i++) {
-        (*updiag)[i] = nu;              //writes nu into the upper diagonal except first and last entry
-    }
-    (*updiag)[0] = 0;
-    (*updiag)[Nx-1] = nu;
+    /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
+    TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix inversion
+    TriMatrix RHS(Nx+1, nu, (1-theta));          //
     
-    /*----------------------------- Constructs the upper diagonal vector ------------------------------------------------------------------------------------------*/
+    /*----------------------------- Performs time integration by 1st multiplying the LHS of the equation, then taking the inverse of the 2nd equation -------------*/
     
-    for (int i=1; i<Nx-1; i++) {
-        (*lowdiag)[i] = nu;              //writes nu into the lower diagonal except first and last entry
-    }
-    (*lowdiag)[Nx-1] = 0;
-    (*lowdiag)[0] = nu;
-    
-    /*----------------------------- Conduct the actual time-integration process as specified by the matrix multiplying method -------------------------------------*/
-    
-    TriMatrix triMatrix(lowdiag, diag, updiag);
-    
-    triMatrix.display();
-    
-    for(double i=0; i<(T-dt); i+=dt) {
-        u2 = triMatrix*u1;
+    for (int t=0; t<Nt; t++) {
+        u2 = RHS*u1;
+        u2 = LHS/u2;
         u1 = u2;
     }
     
@@ -131,5 +109,6 @@ int main() {
     for (int i=0; i<(*u1).size(); i++){
         cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
     }
+    
     return 0;
 }
