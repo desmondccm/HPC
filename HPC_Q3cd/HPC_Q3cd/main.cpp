@@ -16,7 +16,7 @@ using namespace std;
 int main() {
     /*----------------------------- Programme description: --------------------------------------------------------------------------------------------------------*/
     
-    cout << "this codes HPC code 1 in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
+    cout << "this codes HPC code for question 3c and d. The final Vector containing the heat distribution of the bar is displayed" << endl;
     cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
     
     /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ int main() {
     double alpha = -1;
     
     
-    while (alpha < 0) {                //heat conductivity, makes sure expression is bigger than 0
+    while (alpha < 0) {                 //heat conductivity, makes sure expression is bigger than 0
         cout << "alpha (suggest 1 > alpha > 0): ";
         cin >> alpha;
     }
