@@ -28,7 +28,7 @@ public:                                                                 //Enable
     
     /*--------------------------------------------- Matrix multiplication function accessable by public ----------------------------------------------------------*/
     
-    vector<double> *Matrixmult(vector<double> *U){                      //initiates a matrix mult function unique to Tri-Matrix that requires 3xN operations
+    vector<double> *operator *(vector<double> *U){                      //initiates a matrix mult function that multiplies matrices with vectors by the * operator
         int dim = diag->size();
         vector<double> *u2;
         vector<double> dum1(dim), dum2(dim), dum3(dim);
@@ -52,8 +52,12 @@ public:                                                                 //Enable
         (*u2)[0] = dum1[0] + dum3[0];
         (*u2)[dim-1] = dum1[dim-1] + dum2[dim-1];
         
-        return u2;
+        delete U;
+        
+        
+        return u2;                                                      //returns multiplcation product
     }
+    
     
     /*--------------------------------------------- Matrix printing function accessable by public ---------------------------------------------------------------*/
     
@@ -74,6 +78,37 @@ public:                                                                 //Enable
         for (int i=0; i < (*lDiag).size(); i++) {
             cout << (*lDiag)[i] << "  ";
         }
+    }
+    
+    /*--------------------------------------------- Matrix inversing function accessable by public ---------------------------------------------------------------*/
+    
+    vector<double> *operator/(vector<double> *y){                       //uses the forward slash operator to perform inversing function
+        int dim = diag->size();
+        vector<double> *x, diagPrime(dim), yPrime(dim), newLdiag(dim);
+        x = new vector<double>(dim);
+        
+        for (int i = 1; i < dim; i++) {
+            newLdiag[i] = (*lDiag)[i-1];
+        }
+        
+        yPrime[0]=(*y)[0];
+        diagPrime[0] = (*diag)[0];
+        
+        for (int i = 1; i < dim ; i++) {                                 //performs forward substitution phase
+            double m = newLdiag[i]/diagPrime[i-1];
+            diagPrime[i] = (*diag)[i] - m*(*uDiag)[i-1];
+            yPrime[i] = (*y)[i] - m*(yPrime)[i-1];
+        }
+        
+        
+        
+        (*x)[dim-1] = yPrime[dim-1]/diagPrime[dim-1];                   //performs backwards substitution phase
+        for (int i=(dim-2); i>=0; i--){
+            (*x)[i] = (yPrime[i] - (*uDiag)[i] * (*x)[i+1])/diagPrime[i];
+        }
+        
+        delete y;                                                       //cleans up
+        return x;                                                       //returns outputs vector
     }
     
     

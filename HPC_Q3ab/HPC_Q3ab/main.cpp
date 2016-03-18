@@ -53,14 +53,15 @@ int main() {
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
     double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
+    double Nt = T/dt;
     
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
     vector<double> x((Nx+1));           //x-co-ordinates
     vector<double> u0((Nx+1));          //initial heat distribution
     vector<double> * u1, * u2;          //vectors declared for matrix multiplication
-    u1 = new vector<double>(Nx+1);      //vetors constructed for starting matrix multiplication
-    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix multiplcation
+    u1 = new vector<double>(Nx+1);      //vetors constructed for starting matrix inversion
+    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix inversion
     
     
     /*----------------------------- Defining the x-co-ordinate space by creating an x-vector ----------------------------------------------------------------------*/
@@ -88,39 +89,54 @@ int main() {
     
     /*----------------------------- Declare and initialize the 3 vectors that define the TriMatrix according to project brief -------------------------------------*/
     
-    vector<double> * updiag;             //declares the upper diagonal via a pointer
-    vector<double> * lowdiag;            //declares the main diagonal via a pointer
-    vector<double> * maindiag;               //declares the lower diagonal via a pointer
+    vector<double> * upDiag;             //declares the upper diagonal via a pointer
+    vector<double> * lowDiag;            //declares the main diagonal via a pointer
+    vector<double> * mainDiag;               //declares the lower diagonal via a pointer
     
-    maindiag = new vector<double>(Nx+1);    //constructs a new vector at address diag to store the matrix's diagonal
-    lowdiag = new vector<double>(Nx);   //constructs a new vector at address lowdiag to store the matrix's lower diagonal
-    updiag = new vector<double>(Nx);    //constructs a new vector at address updiag to store the matrix's upper diagonal
+    mainDiag = new vector<double>(Nx+1);    //constructs a new vector at address diag to store the matrix's diagonal
+    lowDiag = new vector<double>(Nx);   //constructs a new vector at address lowdiag to store the matrix's lower diagonal
+    upDiag = new vector<double>(Nx);    //constructs a new vector at address updiag to store the matrix's upper diagonal
     
     /*----------------------------- Constructs the diagonal vector ------------------------------------------------------------------------------------------------*/
     
     for (int i=1; i<Nx; i++) {
-        (*maindiag)[i] = (2 * nu) + 1;      //writes 1+2nu into the middle diagonal except first and last entry
+        (*mainDiag)[i] = (2 * nu) + 1;      //writes 1+2nu into the middle diagonal except first and last entry
     }
-    (*maindiag)[0] = 1;                     //wrties last entry and first entry as 1
-    (*maindiag)[Nx] = 1;
+    (*mainDiag)[0] = 1;                     //wrties last entry and first entry as 1
+    (*mainDiag)[Nx] = 1;
     
     /*----------------------------- Constructs the upper diagonal vector ------------------------------------------------------------------------------------------*/
     
     for (int i=1; i<Nx-1; i++) {
-        (*updiag)[i] = -1 * nu;             //writes minus nu into the upper diagonal except first and last entry
+        (*upDiag)[i] = -1 * nu;             //writes minus nu into the upper diagonal except first and last entry
     }
-    (*updiag)[0] = 0;
-    (*updiag)[Nx-1] = -1 * nu;
+    (*upDiag)[0] = 0;
+    (*upDiag)[Nx-1] = -1 * nu;
     
     /*----------------------------- Constructs the upper diagonal vector ------------------------------------------------------------------------------------------*/
     
     for (int i=1; i<Nx-1; i++) {
-        (*lowdiag)[i] = -1 * nu;            //writes minus nu into the lower diagonal except first and last entry
+        (*lowDiag)[i] = -1 * nu;            //writes minus nu into the lower diagonal except first and last entry
     }
-    (*lowdiag)[Nx-1] = 0;
-    (*lowdiag)[0] = -1 * nu;
+    (*lowDiag)[Nx-1] = 0;
+    (*lowDiag)[0] = -1 * nu;
+    
+    /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
+    TriMatrix triMatrix(lowDiag, mainDiag, upDiag);         //generates the triMatrix to be inverted
+    triMatrix.display();            //displays matrix
+    
+    /*----------------------------- Performs time integration by the matrix inversion using the forward slash operator representing the thomas algorithm ----------*/
+    
+    for (int t=0; t<Nt; t++) {
+        u2 = triMatrix/u1;
+        u1 = u2;
+    }
+    
+    cout << endl;
+    cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
+    for (int i=0; i<(*u1).size(); i++){
+        cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
+    }
     
     return 0;
 }
-
-
