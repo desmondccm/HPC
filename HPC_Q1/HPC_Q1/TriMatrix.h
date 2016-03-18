@@ -21,14 +21,14 @@ public:                                                                 //Enable
     
     /*--------------------------------------------- Constructor for constructing the trimatrix by defining the diagonal vectors ----------------------------------*/
     
-    TriMatrix(vector<double> *a, vector<double> *b, vector<double> *c):
+    TriMatrix(vector<double> *a, vector<double> *b, vector<double> *c): //list initialization
     diag(b), uDiag(c), lDiag(a) {};
     
     
     
     /*--------------------------------------------- Matrix multiplication function accessable by public ----------------------------------------------------------*/
     
-    vector<double> *Matrixmult(vector<double> *U){                      //initiates a matrix mult function unique to Tri-Matrix that requires 3xN operations
+    vector<double> *operator *(vector<double> *U){                      //initiates a matrix multiplication function * that overloads the traditional * function 
         int dim = diag->size();
         vector<double> *u2;
         vector<double> dum1(dim), dum2(dim), dum3(dim);
@@ -51,6 +51,8 @@ public:                                                                 //Enable
         }
         (*u2)[0] = dum1[0] + dum3[0];
         (*u2)[dim-1] = dum1[dim-1] + dum2[dim-1];
+        
+        delete U;                                                       //frees up memory by freeing up pointer space
         
         return u2;
     }

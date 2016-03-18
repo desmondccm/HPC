@@ -21,7 +21,7 @@ int main() {
     
     /*----------------------------- Declare variables used for the problem ----------------------------------------------------------------------------------------*/
     
-    double alpha = 1;                 //heat conductivity
+    double alpha = 0.1;                 //heat conductivity
     double dt = 0.001;                  //time step size
     double Nx = 20;                     //space steps
     double L = 1;                       //bar length
@@ -97,13 +97,12 @@ int main() {
     
     /*----------------------------- Conduct the actual time-integration process as specified by the matrix multiplying method -------------------------------------*/
     
-    TriMatrix *triMatrix;
-    triMatrix = new TriMatrix(lowdiag, diag, updiag);
+    TriMatrix triMatrix(lowdiag, diag, updiag);
     
-    triMatrix->display();
+    triMatrix.display();
     
     for(double i=0; i<(T-dt); i+=dt) {
-        u2 = triMatrix->Matrixmult(u1);
+        u2 = triMatrix*u1;
         u1 = u2;
     }
     
