@@ -21,33 +21,38 @@ int main() {
     
     /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
     
-    cout << "alpha: ";
-    double alpha;                       //heat conductivity
-    cin >> alpha;
+
+    double alpha = -1;
+    
+    
+    while (alpha < 0) {                //heat conductivity, makes sure expression is bigger than 0
+        cout << "alpha (suggest 1 > alpha > 0): ";
+        cin >> alpha;
+    }
     
     cout << endl;
-    cout << "dt: ";
+    cout << "dt (suggest smaller than 0.001): ";
     double dt;
     cin >> dt;                          //time step size
     
     cout << endl;
-    cout << "Nx: ";
+    cout << "Nx (suggest ~20): ";
     double Nx;
     cin >> Nx;                          //Space steps
     
     
     cout << endl;
-    cout << "L: ";
+    cout << "L (suggest 1): ";
     double L;
     cin >> L;                           //bar length
     
     cout << endl;
-    cout << "T: ";
+    cout << "T (suggest O~10s): ";
     double T;
     cin >> T;                           //run time
     
     cout << endl;
-    cout << "theta: ";
+    cout << "theta (0<theta<1): ";
     double theta;
     cin >> theta;
     
