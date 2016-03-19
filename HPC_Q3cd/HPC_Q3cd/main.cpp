@@ -98,8 +98,9 @@ int main() {
     
     
     /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
-    TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix inversion
-    TriMatrix RHS(Nx+1, nu, (1-theta));          //
+    TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix to be inversion
+    TriMatrix RHS(Nx+1, nu, (1-theta));          //generates the multiplication matrix
+    RHS.display();
     
     /*----------------------------- Performs time integration by 1st multiplying the LHS of the equation, then taking the inverse of the 2nd equation -------------*/
     

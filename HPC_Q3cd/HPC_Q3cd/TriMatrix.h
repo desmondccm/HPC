@@ -1,6 +1,6 @@
 //
 //  TriMatrix.h
-//  HPC_Q3ab
+//  HPC_Q30.
 //
 //  Created by Desmond Cheung on 15/03/2016.
 //  Copyright (c) 2016 cmc213. All rights reserved.
@@ -16,21 +16,14 @@ using namespace std;
 class TriMatrix {
     vector<double> *diag, *uDiag, *lDiag;                               //stores the 3 vectors for the diagonals as pointers to their memory location
     
-    vector<double> fill(double member){                                 //private filling function that fills a repeating diagonal
-        vector<double> diagonal(diag->size());
-        for (int i = 0; i < diag->size(); i++) {
-            diagonal[i] = member;
-        }
-        
-        return diagonal;
-    }
     
-    
+
     
     
 public:                                                                 //Enables public access using the constructor function and other accessor functions
     
     /*--------------------------------------------- Constructor for constructing the trimatrix by defining the diagonal vectors ----------------------------------*/
+    
     
     //assumes each entry in the diagonal vectors are unique, this constructor is a universal trimatrix constructor.
     TriMatrix(vector<double> *a, vector<double> *b, vector<double> *c):
@@ -41,9 +34,17 @@ public:                                                                 //Enable
         diag = new vector<double>(dim);
         uDiag = new vector<double>(dim-1);
         lDiag = new vector<double>(dim-1);
-        *diag = fill(1-2*nu*arg);
-        *uDiag = fill(nu*arg);
-        *lDiag = fill(nu*arg);
+        
+        for (int i = 0; i < diag->size(); i++) {
+            (*diag)[i] = 1-2*nu*arg;
+        }
+        for (int i = 0; i < uDiag->size(); i++) {
+            (*uDiag)[i] = nu*arg;
+        }
+        for (int i = 0; i < lDiag->size(); i++) {
+            (*lDiag)[i] = nu*arg;
+        }
+ 
         (*uDiag)[0] = 0;
         (*lDiag)[dim-2] = 0;
         (*diag)[0] = 1;
@@ -136,6 +137,7 @@ public:                                                                 //Enable
         return x;                                                       //returns outputs vector
     }
     
+    ~TriMatrix(){};
     
 };
 
