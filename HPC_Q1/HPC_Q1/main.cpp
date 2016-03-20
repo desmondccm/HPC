@@ -70,7 +70,7 @@ int main() {
     /*----------------------------- Defining the u0 vector as the initial heat distribution along the bar ---------------------------------------------------------*/
     
     for (int i=0; i<Nx+1; i++) {        //fill vector based on the size of size of the vector
-        u0[i]=x[i]/(1-x[i]);            //increments the x vector according to dx size
+        u0[i]=x[i]*(1-x[i]);            //increments the x vector according to dx size
         //cout<<u0[i]<<endl;            //check that the x-vector makes sense
     }
     
