@@ -110,6 +110,7 @@ int main() {
         u1 = u2;
     }
     
+    
     cout << endl;
     cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
     for (int i=0; i<(*u1).size(); i++){
