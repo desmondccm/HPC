@@ -78,9 +78,9 @@ int main() {
     
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
-    double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
-    double Nt = T/dt;
+    
+    cout << "The CFL factor (nu) is: " << nu << endl;
     
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
