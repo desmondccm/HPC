@@ -63,7 +63,7 @@ int main() {
     double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
     double Nt = T/dt;
-    
+    cout << "nu is: " << nu << endl;
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
     vector<double> x((Nx+1));           //x-co-ordinates
@@ -96,38 +96,29 @@ int main() {
         (*u1)[i] = u0[i]; //ommit the front and end term which was defined above using gamma0 and gamma1
     }
     
-    
     /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
     TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix to be inversion
     TriMatrix RHS(Nx+1, nu, (1-theta));          //generates the multiplication matrix
     RHS.display();
     
     /*----------------------------- Performs time integration by 1st multiplying the LHS of the equation, then taking the inverse of the 2nd equation -------------*/
-    
-    /*for (int t=0; t<Nt; t++) {
-        u2 = RHS*u1;
-        u2 = LHS/u2;
-        u1 = u2;
-    }*/
+
     
     cout << endl;
-    //cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
-    /*for (int i=0; i<(*u1).size(); i++){
-        cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
-    }*/
+
     
     vector<double> a((Nx+1)*(Nx+1));
     
     RHS.Mat2vec();
     
-    for (int t=0; t<Nt; t++) {
-        (*u2) = RHS.multiblas((*u1),(Nx+1));
-        u1 = u2;
-    }
+    u2 = LHS.inlapack(u2, (Nx+1));
+    u1 = u2;
 
-    
+
+    cout << endl;
+    cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
     for (int i=0; i<(*u1).size(); i++){
-        cout << (*u2)[i] << endl;
+        cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
     }
     
     return 0;

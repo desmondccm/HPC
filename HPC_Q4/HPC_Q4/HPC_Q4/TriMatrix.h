@@ -136,6 +136,7 @@ public:                                                                 //Enable
         return x;                                                       //returns outputs vector
     }
     
+    /*---------------------------------------------- This converts the matrix to a vector -----------------------------------------------------------------------*/
     void Mat2vec(){
         vector<double> dum(diag->size()*diag->size());
         dum[0] = (*diag)[0];                                         //creating the first 2 entries for the converted vector
@@ -153,6 +154,7 @@ public:                                                                 //Enable
         }
         dum[diag->size()*diag->size()-1] = (*diag)[diag->size()-1];
         dum[diag->size()*diag->size()-2] = (*uDiag)[uDiag->size()-1];
+        dum[diag->size()*diag->size()-diag->size()-1] = 0;
         
         matarray = new vector<double>(diag->size()*diag->size());
 
@@ -161,25 +163,76 @@ public:                                                                 //Enable
         }
 
     }
-    vector<double> multiblas(vector<double> xold, int length){
-        double x[length*length];                                //define the diagonal length as the leading dimension of the matrix
-        double y[length*length];                                //define the x-array as an array
-        double a[length*length];
+    
+    /*---------------------------------------------- This multiplies the matrix using the BLAS routine -------------------------------------------------------------*/
+    
+    vector<double> *multiblas(vector<double> *xold, int length){
+        double x[length];                                //define the diagonal length as the leading dimension of the matrix
+        double y[length];                                //define the x-array as an array
+        double a[length*length];                         //
+        vector<double> *output;
+        output = new vector<double>(length);
         
         for (int i = 0; i < length * length; i++){
             a[i]=(*matarray)[i];
+            //cout << a[i] << "  ";
         }
-        copy(xold.begin(), xold.end(), x);
+        //cout << endl;
+        
+        copy(xold->begin(), xold->end(), x);
+        
+        /*for (int i = 0; i < length; i++){
+            cout<<x[i]<<endl;
+        }
+        */
         
         double alpha, beta;
         alpha = 1;
         beta = 0;
+    
+        cblas_dgemv(CblasColMajor, CblasNoTrans, length, length, alpha, a, length, x, 1, beta, y, 1); //BLAS HERE!!!!!!!!!!!!!!!!!
+
         
-        cblas_dgemv(CblasColMajor, CblasNoTrans, length, length, alpha, a, length, x, 1, beta, y, 1);
-        
-        vector<double> output(y, y+length*length);
+        for (int i = 0; i < length * length; i++){
+            (*output)[i]=y[i];
+        }
         
         return output;
+    }
+    
+    /*---------------------------------------------- This inverse the matrix using LAPACK dgtsv function ---------------------------------------------------------------*/
+    vector<double> *inlapack(vector<double> *xold, int length){
+        double x[length];                                //define the diagonal length as the leading dimension of the matrix
+        double low[length-1], center[length], up[length-1];
+        vector<double> *output;
+        output = new vector<double>(length);
+        int nrhs = 1;
+        int info;
+       
+        for (int i = 0; i < length - 1; i++){
+            low[i] = (*lDiag)[i];
+            up[i] = (*diag)[i];
+        }
+        
+        for (int i = 0; i < length; i++){
+            center[i]=(*diag)[i];
+        }
+        
+        //cout << endl;
+        
+        copy(xold->begin(), xold->end(), x);
+        
+        dgtsv_(&length, &nrhs, low, center, up, x, &length, &info);
+        
+        for (int i = 0; i < length * length; i++){
+            (*output)[i]=x[i];
+        }
+        
+        
+        
+        
+        return output;
+        
     }
     
 };
