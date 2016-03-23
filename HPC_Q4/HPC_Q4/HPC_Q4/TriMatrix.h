@@ -19,6 +19,7 @@ class TriMatrix {
     vector<double> *matarray;                                           //stores the matrix as a vector for BLAS usage
     
     
+    
 public:                                                                 //Enables public access using the constructor function and other accessor functions
     
     /*--------------------------------------------- Constructor for constructing the trimatrix by defining the diagonal vectors ----------------------------------*/
@@ -181,6 +182,8 @@ public:                                                                 //Enable
         
         copy(xold->begin(), xold->end(), x);
         
+        delete xold;
+        
         /*for (int i = 0; i < length; i++){
             cout<<x[i]<<endl;
         }
@@ -193,9 +196,10 @@ public:                                                                 //Enable
         cblas_dgemv(CblasColMajor, CblasNoTrans, length, length, alpha, a, length, x, 1, beta, y, 1); //BLAS HERE!!!!!!!!!!!!!!!!!
 
         
-        for (int i = 0; i < length * length; i++){
+        for (int i = 0; i < length; i++){
             (*output)[i]=y[i];
         }
+        
         
         return output;
     }
@@ -211,25 +215,26 @@ public:                                                                 //Enable
        
         for (int i = 0; i < length - 1; i++){
             low[i] = (*lDiag)[i];
-            up[i] = (*diag)[i];
+            up[i] = (*uDiag)[i];
         }
-        
+    
         for (int i = 0; i < length; i++){
             center[i]=(*diag)[i];
         }
         
         //cout << endl;
         
+        
         copy(xold->begin(), xold->end(), x);
         
         dgtsv_(&length, &nrhs, low, center, up, x, &length, &info);
         
-        for (int i = 0; i < length * length; i++){
+        for (int i = 0; i < length; i++){
             (*output)[i]=x[i];
         }
         
         
-        
+        delete xold;
         
         return output;
         

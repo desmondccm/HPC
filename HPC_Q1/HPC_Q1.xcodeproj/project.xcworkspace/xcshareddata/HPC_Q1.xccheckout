@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>C7272F03-0BA0-48A1-88A6-661756F483F7</string>
 	<key>IDESourceControlProjectName</key>
-	<string>HPC_Q1</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>2A447D784982058800440BDF4CC2F70DBE9FFD17</key>
 		<string>https://github.com/desmondccm/HPC.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>HPC_Q1/HPC_Q1.xcodeproj</string>
+	<string>HPC_Q1/HPC_Q1.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>2A447D784982058800440BDF4CC2F70DBE9FFD17</key>
