@@ -22,38 +22,64 @@ int main() {
     
     /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
     
-    cout << "alpha: ";
-    double alpha;                       //heat conductivity
-    cin >> alpha;
+    double alpha = -0.1;
+    
+    
+    while (alpha < 0) {                 //heat conductivity, makes sure expression is bigger than 0
+        cout << "alpha (suggest 1 > alpha > 0): ";
+        cin >> alpha;
+    }
+    
+    
     
     cout << endl;
-    cout << "dt: ";
-    double dt;
-    cin >> dt;                          //time step size
+    cout << "L (suggest 1): ";
+    double L = 1;
+    cin >> L;                           //bar length
+    
     
     cout << endl;
-    cout << "Nx: ";
+    cout << "Nx (suggest ~20): ";
     double Nx;
     cin >> Nx;                          //Space steps
     
+    double dx = L/Nx;
+    
+    double dtlim = 0.5 * dx * dx / alpha;      //computes the maximum time step using CFL criteria
     
     cout << endl;
-    cout << "L: ";
-    double L;
-    cin >> L;                           //bar length
-    
-    cout << endl;
-    cout << "T: ";
+    cout << "T (suggest O~10s): ";
     double T;
     cin >> T;                           //run time
+    
+    int Ntlim = T/dtlim + 1;
+    
+    cout << "By computing the maximum CFL criteria, the suggested maximum number of timestep should be: " << Ntlim << endl;
+    
+    cout << endl;
+    cout << "number of time steps: ";
+    double Nt;
+    cin >> Nt;                          //time step size
+    
+    double dt = T/Nt;
+    
+    if (Nt < Ntlim){
+        cout << "Entered time step is less than recommended time step and slution may not converge!!" <<endl;
+    }
+    
+    
+    cout << endl;
+    cout << "theta (0<theta<1): ";
+    double theta;
+    cin >> theta;
     
     /*----------------------------- Other calculated variables ----------------------------------------------------------------------------------------------------*/
     
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
-    double dx = L/Nx;                   //defines space step size
     double nu = alpha*dt/dx/dx;         //defines the nu constant
-    double Nt = T/dt;
+    
+    cout << "The CFL factor (nu) is: " << nu << endl;
     
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     

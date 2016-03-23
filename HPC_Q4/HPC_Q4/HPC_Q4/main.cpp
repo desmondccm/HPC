@@ -10,9 +10,10 @@
 #include <math.h>
 #include <vector>
 #include "TriMatrix.h"
-#include <Accelerate/Accelerate.h> //this header is Mac OS specific because the code is developed in XCode, which comes with Accelerate framework from apple. Please disregard this header and compile using the linux header to compile the programme.
+
 //#include <cblas.h>
 //#include <lapacke.h>
+
 
 using namespace std;
 
@@ -44,7 +45,7 @@ int main() {
     
     cout << endl;
     cout << "Nx (suggest ~20): ";
-    double Nx;
+    int Nx;
     cin >> Nx;                          //Space steps
     
     double dx = L/Nx;
@@ -86,12 +87,8 @@ int main() {
     cout << "The CFL factor (nu) is: " << nu << endl;
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
-    vector<double> x((Nx+1));           //x-co-ordinates
-    vector<double> u0((Nx+1));          //initial heat distribution
-    vector<double> * u1, * u2;          //vectors declared for matrix multiplication
-    u1 = new vector<double>(Nx+1);      //vetors constructed for starting matrix inversion
-    u2 = new vector<double>(Nx+1);      //vector defined for receipient of matrix inversion
-    
+
+    double x[Nx+1], u1[Nx+1], u2[Nx+1];          //vectors declared for matrix multiplication
     
     /*----------------------------- Defining the x-co-ordinate space by creating an x-vector ----------------------------------------------------------------------*/
     
@@ -103,18 +100,14 @@ int main() {
     /*----------------------------- Defining the u0 vector as the initial heat distribution along the bar ---------------------------------------------------------*/
     
     for (int i=0; i<Nx+1; i++) {        //fill vector based on the size of size of the vector
-        u0[i]=x[i]*(1-x[i]);            //increments the x vector according to dx size
+        u1[i]=x[i]*(1-x[i]);            //increments the x vector according to dx size
         //cout<<u0[i]<<endl;            //check that the x-vector makes sense
     }
     
     /*----------------------------- Constructing the starting initial u vector for the heat distribution ----------------------------------------------------------*/
     
-    (*u1)[0]=gamma0;
-    (*u1)[Nx]=gamma1;
-    
-    for (int i=1; i<Nx; i++) {
-        (*u1)[i] = u0[i]; //ommit the front and end term which was defined above using gamma0 and gamma1
-    }
+    u1[0]=gamma0;
+    u1[Nx]=gamma1;
     
     /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
     TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix to be inversion
@@ -125,23 +118,19 @@ int main() {
 
     
     cout << endl;
-
-    
-    vector<double> a((Nx+1)*(Nx+1));
     
     RHS.Mat2vec();
     
     for (int t = 0; t < Nt; t++){
-        u2 = RHS.multiblas(u1, (Nx+1));
-        u2 = LHS.inlapack(u2, (Nx+1));
-        u1 = u2;
+        RHS.multiblas(u1, (Nx+1));
+        LHS.inlapack(u1, (Nx+1));
     }
 
 
     cout << endl;
     cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
-    for (int i=0; i<(*u1).size(); i++){
-        cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
+    for (int i = 0; i < Nx+1; i++){
+        cout << "x="<<x[i]<<": "<<u1[i] << endl;
     }
     
     return 0;
