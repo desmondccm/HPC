@@ -50,7 +50,12 @@ int main() {
     
     double dx = L/Nx;
     
-    double dtlim = 0.5 * dx * dx / alpha;      //computes the maximum time step using CFL criteria
+    cout << endl;
+    cout << "theta (0<theta<1): ";
+    double theta;
+    cin >> theta;
+    
+    double dtlim = 0.5 * dx * dx / (alpha*theta);      //computes the maximum time step using CFL criteria
     
     cout << endl;
     cout << "T (suggest O~10s): ";
@@ -73,11 +78,6 @@ int main() {
     }
     
     
-    cout << endl;
-    cout << "theta (0<theta<1): ";
-    double theta;
-    cin >> theta;
-    
     /*----------------------------- Other calculated variables ----------------------------------------------------------------------------------------------------*/
     
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
@@ -88,7 +88,11 @@ int main() {
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
 
-    double x[Nx+1], u1[Nx+1], u2[Nx+1];          //vectors declared for matrix multiplication
+    double *x, *u1, *u2, *u3;           //vectors declared for matrix multiplication
+    x = new double [Nx+1];
+    u1 = new double [Nx+1];
+    u2 = new double [Nx+1];
+    u3 = new double [Nx+1];
     
     /*----------------------------- Defining the x-co-ordinate space by creating an x-vector ----------------------------------------------------------------------*/
     
@@ -110,27 +114,26 @@ int main() {
     u1[Nx]=gamma1;
     
     /*----------------------------- Generates tri-matrix to be inverted -------------------------------------------------------------------------------------------*/
-    TriMatrix LHS(Nx+1, nu, (-1*theta));         //generates the matrix to be inversion
+    TriMatrix LHS(Nx+1, nu, (-1*theta));       //generates the matrix to be inversion
     TriMatrix RHS(Nx+1, nu, (1-theta));          //generates the multiplication matrix
-    RHS.display();
     
     /*----------------------------- Performs time integration by 1st multiplying the LHS of the equation, then taking the inverse of the 2nd equation -------------*/
-
-    
-    cout << endl;
     
     RHS.Mat2vec();
+    LHS.matfactor();
     
-    for (int t = 0; t < Nt; t++){
-        RHS.multiblas(u1, (Nx+1));
-        LHS.inlapack(u1, (Nx+1));
+    for (int t = 0; t < Nt + 1; t++){
+        u2 = RHS.multiblas(u1);
+        u3 = LHS.matsolve(u2);
+        u1 = u3;
+        cout << "This is iteration number: " << t << endl;
     }
 
 
     cout << endl;
     cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
     for (int i = 0; i < Nx+1; i++){
-        cout << "x="<<x[i]<<": "<<u1[i] << endl;
+        cout << "x="<<x[i]<<": "<<u2[i] << endl;
     }
     
     return 0;

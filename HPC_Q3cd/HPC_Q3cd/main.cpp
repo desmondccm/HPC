@@ -124,8 +124,8 @@ int main() {
     
     for (int t=0; t<Nt; t++) {
         u2 = RHS*u1;
-        u2 = LHS/u2;
-        u1 = u2;
+        u1 = LHS/u2;
+        cout << t << endl;
     }
     
     

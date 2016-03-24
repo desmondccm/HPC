@@ -133,7 +133,7 @@ public:                                                                 //Enable
             (*x)[i] = (yPrime[i] - (*uDiag)[i] * (*x)[i+1])/diagPrime[i];
         }
         
-        delete y;                                                       //cleans up
+        delete y;
         return x;                                                       //returns outputs vector
     }
     

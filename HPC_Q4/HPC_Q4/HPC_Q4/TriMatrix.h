@@ -18,8 +18,11 @@ using namespace std;
 
 class TriMatrix {
     int dim;
-    double *diag, *uDiag, *lDiag;                               //stores the 3 vectors for the diagonals as pointers to their memory location
-    double *matarray;                                           //stores the matrix as a vector for BLAS usage
+    double *diag, *uDiag, *lDiag, *matarray;                  //stores the diagonals, the matrix arrays
+    double *dl, *d, *du, *du2;                                //stores the factorized diagonals and the super diagonal
+    int *ipiv;
+    
+
 
     
     
@@ -87,15 +90,15 @@ public:                                                                 //Enable
     
     /*---------------------------------------------- This converts the matrix to a vector -----------------------------------------------------------------------*/
     void Mat2vec(){
-        double matarray[dim * dim];
-        matarray[0] = diag[0];                                         //creating the first 2 entries for the converted vector
+        matarray = new double[dim * dim];
+        matarray[0] = diag[0];                                          //creating the first 2 entries for the converted vector
         matarray[1] = lDiag[0];
         int j = 0;
         
-        for (int i = 2; i < dim; i++){                         //creating the next (Nx-1) entries for the matrix
+        for (int i = 2; i < dim; i++){                                  //creating the next (Nx-1) entries for the matrix
             matarray[i] = 0;
         }
-        for (int i = dim; i < dim * dim - dim; i = i + dim){                         //creating a list of vectors
+        for (int i = dim; i < dim * dim - dim; i = i + dim){            //creating a list of vectors
             matarray[i + j] = uDiag[i/dim-1];
             matarray[i+1 + j] = diag[i/dim];
             matarray[i+2 + j] = uDiag[i/dim];
@@ -104,35 +107,85 @@ public:                                                                 //Enable
         matarray[dim*dim-1] = diag[dim-1];
         matarray[dim*dim-2] = uDiag[dim-2];
         matarray[dim*dim-dim-1] = 0;
-
     }
     
+    void disparray(){
+        for (int i = 0; i < dim * dim; i++){
+            cout << matarray[i] << "  ";
+        }
+    }
     /*---------------------------------------------- This multiplies the matrix using the BLAS routine -------------------------------------------------------------*/
-    
-    void multiblas(double *x, int length){
-        double y[length];                                //define the x-array as an array
 
+    double *multiblas(double *x){
+        double *y = new double[dim];                                    //define the x-array as an array
+        
         double alpha, beta;
         alpha = 1;
         beta = 0;
-    
-        cblas_dgemv(CblasColMajor, CblasNoTrans, length, length, alpha, matarray, length, x, 1, beta, y, 1); //BLAS HERE!!!!!!!!!!!!!!!!!
-
-        x = y;
         
+        cblas_dgemv(CblasColMajor, CblasNoTrans, dim, dim, alpha, matarray, dim, x, 1, beta, y, 1); //BLAS HERE!!!!!!!!!!!!!!!!!
+        
+        //I want to assign the value of y to x.
+        delete x;
+        return y;
     }
     
     /*---------------------------------------------- This inverse the matrix using LAPACK dgtsv function ---------------------------------------------------------------*/
-    void inlapack(double *x, int length){
+    void matfactor(){
+        int info;
+        dl = new double[dim-1];
+        d = new double[dim];
+        du = new double[dim-1];
+        du2 = new double[dim-2];
+        ipiv = new int[dim];
+        
+        copy(lDiag, lDiag + dim-1, dl);
+        copy(diag, diag + dim, d);
+        copy(uDiag, uDiag + dim-1, du);
+        
+    
+        dgttrf_(&dim, dl, d, du, du2, ipiv, &info);
+        
+        if (info != 0){
+            cout << "dgttrd routine (factoring) error! Error code: " << info <<endl;
+        }
+    }
+    
+    double *matsolve(double *b){
+        int nrhs = 1;
+        int info;
+        char trans = 'N';
+        
+        dgttrs_(&trans, &dim, &nrhs, dl, d, du, du2, ipiv, b, &dim, &info);
+        
+        if (info != 0){
+            cout << "DGTTRS routine (solve) error! Error code: " << info <<endl;
+        }
+        
+        return b;
+    }
+    
+    double *inlapack(double *x){
 
         int nrhs = 1;
         int info;
+        double *low, *mid;
+        low = new double[dim-1];
+        mid = new double[dim];
         
-        dgtsv_(&length, &nrhs, lDiag, diag, uDiag, x, &length, &info);
+        
+        copy(lDiag, lDiag + dim-1, low);
+        copy(diag, diag + dim, mid);
+        
+        
+        dgtsv_(&dim, &nrhs, low, mid, uDiag, x, &dim, &info);
         
         if (info != 0){
             cout << "DGTSV routine error! Error code: " << info <<endl;
         }
+        delete low;
+        delete mid;
+        return x;
     }
     
         
