@@ -17,8 +17,7 @@ using namespace std;
 int main() {
     /*----------------------------- Programme description: --------------------------------------------------------------------------------------------------------*/
     
-    cout << "this codes HPC code 1 in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
-    cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
+    cout << "this codes HPC code 3ab in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
     
     /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
     
@@ -67,11 +66,6 @@ int main() {
         cout << "Entered time step is less than recommended time step and slution may not converge!!" <<endl;
     }
     
-    
-    cout << endl;
-    cout << "theta (0<theta<1): ";
-    double theta;
-    cin >> theta;
     
     /*----------------------------- Other calculated variables ----------------------------------------------------------------------------------------------------*/
     

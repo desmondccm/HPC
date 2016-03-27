@@ -21,8 +21,7 @@ using namespace std;
 int main() {
     /*----------------------------- Programme description: --------------------------------------------------------------------------------------------------------*/
     
-    cout << "this codes HPC code for question 3c and d. The final Vector containing the heat distribution of the bar is displayed" << endl;
-    cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
+    cout << "this codes HPC code for question 4. The final Vector containing the heat distribution of the bar is displayed" << endl;
     
     /*----------------------------- Define variables via user input -----------------------------------------------------------------------------------------------*/
     
@@ -39,7 +38,7 @@ int main() {
     
     cout << endl;
     cout << "L (suggest 1): ";
-    double L = 1;
+    double L;
     cin >> L;                           //bar length
     
     

@@ -11,6 +11,7 @@
 #define CLASS_TriMatrix
 #include <vector>
 #include <Accelerate/Accelerate.h>
+
 //#include <cblas.h>
 //#include <lapacke.h>
 
@@ -164,30 +165,6 @@ public:                                                                 //Enable
         
         return b;
     }
-    
-    double *inlapack(double *x){
-
-        int nrhs = 1;
-        int info;
-        double *low, *mid;
-        low = new double[dim-1];
-        mid = new double[dim];
-        
-        
-        copy(lDiag, lDiag + dim-1, low);
-        copy(diag, diag + dim, mid);
-        
-        
-        dgtsv_(&dim, &nrhs, low, mid, uDiag, x, &dim, &info);
-        
-        if (info != 0){
-            cout << "DGTSV routine error! Error code: " << info <<endl;
-        }
-        delete low;
-        delete mid;
-        return x;
-    }
-    
         
     
 };

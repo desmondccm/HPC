@@ -34,8 +34,6 @@ public:                                                                 //Enable
         vector<double> dum1(dim), dum2(dim), dum3(dim);
         u2 = new vector<double>(dim);
         
-        cout<<dim<<endl;
-        
         
         for (int i = 0; i < (dim - 1); i++) {                           //for adding the upper diagonal's contribution to the output vector
             dum3[i] = (*U)[i+1] * (*uDiag)[i];

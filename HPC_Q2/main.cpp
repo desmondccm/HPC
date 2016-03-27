@@ -13,72 +13,25 @@
 using namespace std;
 
 
-int main() {
+int main(int argc, const char * argv[]) {
     /*----------------------------- Programme description: --------------------------------------------------------------------------------------------------------*/
     
-    cout << "this codes HPC code 1 in MATLAB. The final Vector containing the heat distribution of the bar is displayed" << endl;
-    cout << "Timestep is 0.001s, Time domain is 10s, alpha = 1, bar end temperatures = 0 K" << endl;
-    
     /*----------------------------- Declare variables used for the problem ----------------------------------------------------------------------------------------*/
-    
-    double alpha = -0.1;
-    
-    
-    while (alpha < 0) {                 //heat conductivity, makes sure expression is bigger than 0
-        cout << "alpha (suggest 1 > alpha > 0): ";
-        cin >> alpha;
-    }
-    
-    
-    
-    cout << endl;
-    cout << "L (suggest 1): ";
-    double L = 1;
-    cin >> L;                           //bar length
-    
-    
-    cout << endl;
-    cout << "Nx (suggest ~20): ";
-    double Nx;
-    cin >> Nx;                          //Space steps
-    
+
+    double L = atof(argv[1]);
+    double Nx = atof(argv[2]);
+    double T = atof(argv[3]);
+    double Nt = atof(argv[4]);
+    double alpha = atof(argv[5]);
     double dx = L/Nx;
-    
-    double dtlim = 0.5 * dx * dx / alpha;      //computes the maximum time step using CFL criteria
-    
-    cout << endl;
-    cout << "T (suggest O~10s): ";
-    double T;
-    cin >> T;                           //run time
-    
-    int Ntlim = T/dtlim + 1;
-    
-    cout << "By computing the maximum CFL criteria, the suggested maximum number of timestep should be: " << Ntlim << endl;
-    
-    cout << endl;
-    cout << "number of time steps: ";
-    double Nt;
-    cin >> Nt;                          //time step size
-    
     double dt = T/Nt;
     
-    if (Nt < Ntlim){
-        cout << "Entered time step is less than recommended time step and slution may not converge!!" <<endl;
-    }
-    
-    
-    cout << endl;
-    cout << "theta (0<theta<1): ";
-    double theta;
-    cin >> theta;
     
     /*----------------------------- Other calculated variables ----------------------------------------------------------------------------------------------------*/
     
     double gamma0 = 0;                  //temperature at front end of bar (BC1)
     double gamma1 = 0;                  //temeprature at rear end of bar (BC2)
     double nu = alpha*dt/dx/dx;         //defines the nu constant
-    
-    cout << "The CFL factor (nu) is: " << nu << endl;
     
     /*----------------------------- Defining preliminary vectors used in the programme ----------------------------------------------------------------------------*/
     
@@ -98,9 +51,8 @@ int main() {
     
     /*----------------------------- Defining the u0 vector as the initial heat distribution along the bar ---------------------------------------------------------*/
     
-    for (int i=0; i<Nx+1; i++) {        //fill vector based on the size of size of the vector
-        u0[i]=x[i]*(1-x[i]);            //increments the x vector according to dx size
-        //cout<<u0[i]<<endl;            //check that the x-vector makes sense
+    for (int i=0; i<Nx+1; i++) {
+        u0[i]=x[i]*(1-x[i]);
     }
     
     /*----------------------------- Constructing the starting initial u vector for the heat distribution ----------------------------------------------------------*/
@@ -147,18 +99,13 @@ int main() {
     /*----------------------------- Conduct the actual time-integration process as specified by the matrix multiplying method -------------------------------------*/
     
     TriMatrix triMatrix(lowdiag, diag, updiag);
-    
-    triMatrix.display();
-    
-    for(double i=0; i<(T-dt); i+=dt) {
+
+    cout << (*u1)[(Nx+1)/2] << " ";
+    for(double i=0; i<Nt-1; i++) {
         u2 = triMatrix*u1;
         u1 = u2;
+        cout <<(*u1)[(Nx+1)/2] << " ";
     }
     
-    cout << endl;
-    cout << "This is the resulting heat vector after time: " << T <<"s"<<endl;
-    for (int i=0; i<(*u1).size(); i++){
-        cout << "x="<<x[i]<<": "<<(*u1)[i] << endl;
-    }
     return 0;
 }
